@@ -1,66 +1,105 @@
-#include <GL/glut.h>
-// Define the vertices and colors for the cube
-GLfloat vertices[8][3] = {
-    {-1.0, -1.0, -1.0}, {1.0, -1.0, -1.0}, {1.0, 1.0, -1.0}, {-1.0, 1.0, -1.0}, {-1.0, -1.0, 1.0}, {1.0, -1.0, 1.0}, {1.0, 1.0, 1.0}, {-1.0, 1.0, 1.0}};
-GLfloat colors[8][3] = {
-    {0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 1.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}, {1.0, 0.0, 1.0}, {1.0, 1.0, 1.0}, {0.0, 1.0, 1.0}};
-// Function to draw a polygon using the specified vertices and colors
-void polygon(int a, int b, int c, int d)
-{
-    glBegin(GL_POLYGON);
-    glColor3fv(colors[a]);
-    glVertex3fv(vertices[a]);
-    glColor3fv(colors[b]);
-    glVertex3fv(vertices[b]);
-    glColor3fv(colors[c]);
-    glVertex3fv(vertices[c]);
-    glColor3fv(colors[d]);
-    glVertex3fv(vertices[d]);
-    glEnd();
-}
-// Function to draw the color cube
-void colorcube()
-{
-    polygon(0, 3, 2, 1);
-    polygon(2, 3, 7, 6);
-    polygon(0, 4, 7, 3);
-    polygon(1, 2, 6, 5);
-    polygon(4, 5, 6, 7);
-    polygon(0, 1, 5, 4);
-}
-// Display callback function
-void display()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    colorcube();
-    glFlush();
-    glutSwapBuffers();
-}
-// Reshape callback function
-void myReshape(int w, int h)
-{
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    if (w <= h)
-        glOrtho(-2.0, 2.0, -2.0 * (GLfloat)h / (GLfloat)w, 2.0 * (GLfloat)h / (GLfloat)w, -10.0,
-                10.0);
-    else
-        glOrtho(-2.0 * (GLfloat)w / (GLfloat)h, 2.0 * (GLfloat)w / (GLfloat)h, -2.0, 2.0, -10.0,
-                10.0);
-    glMatrixMode(GL_MODELVIEW);
-}
-// Main function
-int main(int argc, char **argv)
-{
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(500, 500);
-    glutCreateWindow("Static Color Cube");
-    glutReshapeFunc(myReshape);
-    glutDisplayFunc(display);
-    glEnable(GL_DEPTH_TEST);
-    glutMainLoop();
-    return 0;
-}
+#include <GL/glut.h> 
+#include <math.h> 
+ 
+float red = 1.0f; 
+float green = 0.0f; 
+float blue = 0.0f; 
+ 
+void initGL() { 
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+    glMatrixMode(GL_PROJECTION); 
+    gluPerspective(45.0f, 1.0f, 1.0f, 100.0f); // Perspective projection for 3D view 
+    glMatrixMode(GL_MODELVIEW); 
+    gluLookAt(1.0f, 1.0f, 3.0f,    // Eye position (slightly to the right and above the object) 
+              0.0f, 0.0f, 0.0f,    // Look-at position (centered at the object) 
+              0.0f, 1.0f, 0.0f);   // Up vector (positive Y-axis) 
+} 
+ 
+void display() { 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Add GL_DEPTH_BUFFER_BIT for depth testing 
+ 
+    glPushMatrix(); 
+ 
+    glBegin(GL_TRIANGLES); 
+    glColor3f(red, green, blue); 
+    // Front face 
+    glVertex3f(0.0f, 0.5f, 0.0f); 
+    glVertex3f(-0.5f, -0.5f, 0.5f); 
+    glVertex3f(0.5f, -0.5f, 0.5f); 
+    // Right face 
+    glVertex3f(0.0f, 0.5f, 0.0f); 
+    glVertex3f(0.5f, -0.5f, 0.5f); 
+    glVertex3f(0.5f, -0.5f, -0.5f); 
+    // Back face 
+    glVertex3f(0.0f, 0.5f, 0.0f); 
+    glVertex3f(0.5f, -0.5f, -0.5f); 
+    glVertex3f(-0.5f, -0.5f, -0.5f); 
+    // Left face 
+    glVertex3f(0.0f, 0.5f, 0.0f); 
+    glVertex3f(-0.5f, -0.5f, -0.5f); 
+    glVertex3f(-0.5f, -0.5f, 0.5f); 
+    glEnd(); 
+ 
+    glPopMatrix(); 
+    glutSwapBuffers(); // Use double buffering for smoother animation 
+} 
+ 
+void menu(int option) { 
+    switch (option) { 
+        case 1: 
+            red = 1.0f; 
+            green = 0.0f; 
+            blue = 0.0f; 
+            break; 
+        case 2: 
+            red = 0.0f; 
+            green = 1.0f; 
+            blue = 0.0f; 
+            break; 
+        case 3: 
+            red = 0.0f; 
+            green = 0.0f; 
+            blue = 1.0f; 
+            break; 
+        case 4: 
+            red = 1.0f; 
+            green = 1.0f; 
+            blue = 0.0f; 
+            break; 
+        case 5: 
+            red = 1.0f; 
+            green = 0.0f; 
+            blue = 1.0f; 
+            break; 
+        case 6: 
+            red = 0.0f; 
+            green = 1.0f; 
+            blue = 1.0f; 
+            break; 
+    } 
+    glutPostRedisplay(); 
+} 
+ 
+ 
+int main(int argc, char** argv) { 
+    glutInit(&argc, argv); 
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // Enable double buffering and depth testing 
+    glutCreateWindow("3D Tetrahedron_4MT21CS138"); 
+    glutInitWindowSize(640, 480); 
+    glutInitWindowPosition(50, 50); 
+    glutDisplayFunc(display); 
+    initGL(); 
+    glutCreateMenu(menu); 
+    glutAddMenuEntry("Red", 1); 
+    glutAddMenuEntry("Green", 2); 
+    glutAddMenuEntry("Blue", 3); 
+    glutAddMenuEntry("Yellow", 4); 
+    glutAddMenuEntry("Magenta", 5); 
+    glutAddMenuEntry("Cyan", 6); 
+ 
+    glutAttachMenu(GLUT_RIGHT_BUTTON); 
+ 
+    glutMainLoop(); 
+ 
+    return 0; 
+} 
